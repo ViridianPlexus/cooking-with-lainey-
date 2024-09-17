@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 
 // ? Phase 1A
 router.get("", async (req, res, next) => {
-  console.log("hello");
+
   let students;
 
   students = await Student.findAll({
@@ -25,7 +25,45 @@ router.get("/", async (req, res, next) => {
   console.log("hello");
   let errorResult = { errors: [], count: 0, pageCount: 0 };
 
-  // Phase 2A: Use query params for page & size
+    // Phase 2A: Use query params for page & size
+  let { page, size } = req.query;
+  console.log(page)
+  //to do, modify values
+  if (!page) page = 1;
+  if (!size) size = 10;
+
+  page = parseInt(page);
+  size = parseInt(size);
+
+  let pagination = {};
+  if (page >= 1 && size >= 1) {
+    //! ERROR HANDLING TIP
+    pagination.limit = size;
+    pagination.offset = size * (page - 1); // ! Provided in README
+  }
+
+  console.log("PAGINATION ", pagination);
+  offset = pagination.offset;
+  limit = pagination.limit;
+
+  let students = await Student.findAll({
+
+    order: [
+      ["lastName", "ASC"],
+      ["firstName", "ASC"],
+    ],
+
+    limit: limit, // ? add limit key-value to query
+    offset: offset, // ?add offset key-value to query
+  })
+
+  res.json(students)
+
+
+
+
+
+
   // Your code here
 
   // Phase 2B: Calculate limit and offset
