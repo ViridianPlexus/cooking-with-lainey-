@@ -7,18 +7,18 @@ const { Student } = require("../db/models");
 const { Op } = require("sequelize");
 
 // ? Phase 1A
-router.get("", async (req, res, next) => {
+// router.get("", async (req, res, next) => {
 
-  let students;
+//   let students;
 
-  students = await Student.findAll({
-    order: [
-      ["lastName", "ASC"],
-      ["firstName", "ASC"],
-    ],
-  });
-  res.json(students);
-});
+//   students = await Student.findAll({
+//     order: [
+//       ["lastName", "ASC"],
+//       ["firstName", "ASC"],
+//     ],
+//   });
+//   res.json(students);
+// });
 
 // List
 router.get("/", async (req, res, next) => {
@@ -37,27 +37,50 @@ router.get("/", async (req, res, next) => {
 
   let pagination = {};
   if (page >= 1 && size >= 1) {
+    
     //! ERROR HANDLING TIP
     pagination.limit = size;
     pagination.offset = size * (page - 1); // ! Provided in README
+  }
+  else{
+    errorResult.errors.push('Must be a number')
+    return errorResult.errors;
   }
 
   console.log("PAGINATION ", pagination);
   offset = pagination.offset;
   limit = pagination.limit;
 
-  let students = await Student.findAll({
+  try{
+    console.log('we are making it into the try')
+    let students = await Student.findAll({
 
-    order: [
-      ["lastName", "ASC"],
-      ["firstName", "ASC"],
-    ],
-
-    limit: limit, // ? add limit key-value to query
-    offset: offset, // ?add offset key-value to query
-  })
-
+      order: [
+        ["lastName", "ASC"],
+        ["firstName", "ASC"],
+      ],
+  
+      limit: limit, // ? add limit key-value to query
+      offset: offset, // ?add offset key-value to query
+    });
+    
   res.json(students)
+  }
+  catch(error){
+    next(error);
+  }
+
+
+  // Custom error handling middleware
+  router.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json(
+        { message: 'Something went wrong!' });
+  });
+
+
+  
+
 
 
 
