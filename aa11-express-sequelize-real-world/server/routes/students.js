@@ -44,7 +44,7 @@ router.get("/", async (req, res, next) => {
   }
   else{
     errorResult.errors.push('Must be a number')
-    return errorResult.errors;
+    // return errorResult.errors;
   }
 
   console.log("PAGINATION ", pagination);
@@ -67,13 +67,17 @@ router.get("/", async (req, res, next) => {
   res.json(students)
   }
   catch(error){
+    console.log('we are in the catch')
     next(error);
   }
 
 
   // Custom error handling middleware
   router.use((err, req, res, next) => {
-    console.error(err.stack);
+
+    console.log('we are making it to the pass')
+
+    // console.error(err.stack);
     res.status(500).json(
         { message: 'Something went wrong!' });
   });
